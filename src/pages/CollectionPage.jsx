@@ -2,12 +2,10 @@ import { useState, useEffect } from "react"
 import { styled } from "@mui/material/styles"
 import Grid from "@mui/material/Grid"
 import Paper from "@mui/material/Paper"
-import Typography from "@mui/material/Typography"
-import ButtonBase from "@mui/material/ButtonBase"
 import fetchCollection from "../Models/FetchCollection"
 
-import { db } from ".."
-import { deleteDoc, doc } from "firebase/firestore"
+import ImgMediaCard from "../components/ImgMediaCard"
+import removeFromCollection from "../Models/RemoveFromCollection"
 
 const Img = styled("img")({
     margin: "auto",
@@ -18,15 +16,7 @@ const Img = styled("img")({
 
 export default function CollectionPage() {
     const [results, setResults] = useState([])
-    async function removeFromCollection(id) {
-        try {
-            const plantDoc = doc(db, "plant_collection", id)
-            await deleteDoc(plantDoc)
-            fetchCollection().then(res => setResults(res))
-        } catch (err) {
-            console.log(err)
-        }
-    }
+    removeFromCollection().then(res => setResults(res))
     useEffect(() => {
         fetchCollection().then(res => setResults(res))
     }, [])
@@ -45,7 +35,15 @@ export default function CollectionPage() {
                 {results?.map(result => {
                     return (
                         <Grid item key={result.firebaseID}>
-                            <Grid item>
+                            <ImgMediaCard
+                                result={result}
+                                onDelete={() =>
+                                    removeFromCollection(result.firebaseID)
+                                }
+                                page="collection-page"
+                                plants={results}
+                            />
+                            {/* <Grid item>
                                 <ButtonBase sx={{ width: 128, height: 128 }}>
                                     <Img
                                         alt="complex"
@@ -103,7 +101,7 @@ export default function CollectionPage() {
                                         </Typography>
                                     </Grid>
                                 </Grid>
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                     )
                 })}
