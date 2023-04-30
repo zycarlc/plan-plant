@@ -12,7 +12,13 @@ import Button from "@mui/material/Button"
 import Tooltip from "@mui/material/Tooltip"
 import MenuItem from "@mui/material/MenuItem"
 import InputBase from "@mui/material/InputBase"
-import { Grass as GrassIcon, Search as SearchIcon } from "@mui/icons-material"
+import {
+    Grass as GrassIcon,
+    Search as SearchIcon,
+    PhotoCameraBack as PhotoCameraBackIcon,
+} from "@mui/icons-material"
+import SearchByImagePopUp from "./SearchByImagePopup"
+
 import { useNavigate } from "react-router-dom"
 import { styled, alpha } from "@mui/material/styles"
 
@@ -43,11 +49,12 @@ const Search = styled("div")(({ theme }) => ({
 const SearchIconWrapper = styled("div")(({ theme }) => ({
     padding: theme.spacing(0, 2),
     height: "100%",
+    width: "100%",
     position: "absolute",
-    pointerEvents: "none",
+    pointerEvents: "inherit",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
 }))
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -70,6 +77,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null)
     const [anchorElUser, setAnchorElUser] = React.useState(null)
+    const [open, setOpen] = React.useState(false)
     const navigate = useNavigate()
     const handleOpenNavMenu = event => {
         setAnchorElNav(event.currentTarget)
@@ -202,6 +210,10 @@ function ResponsiveAppBar() {
                         <Search>
                             <SearchIconWrapper>
                                 <SearchIcon />
+                                <PhotoCameraBackIcon
+                                    sx={{ cursor: "pointer" }}
+                                    onClick={() => setOpen(true)}
+                                />
                             </SearchIconWrapper>
                             <StyledInputBase
                                 placeholder="Search…"
@@ -251,6 +263,12 @@ function ResponsiveAppBar() {
                     </Box>
                 </Toolbar>
             </Container>
+            <SearchByImagePopUp
+                open={open}
+                setOpen={() => {
+                    setOpen(false)
+                }}
+            />
         </AppBar>
     )
 }
