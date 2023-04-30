@@ -16,9 +16,13 @@ const Img = styled("img")({
 
 export default function CollectionPage() {
     const [results, setResults] = useState([])
-    removeFromCollection().then(res => setResults(res))
+    function remove(id) {
+        removeFromCollection(id).then(res => setResults(res))
+    }
     useEffect(() => {
-        fetchCollection().then(res => setResults(res))
+        fetchCollection().then(res => {
+            setResults(res)
+        })
     }, [])
     return (
         <Paper
@@ -37,9 +41,7 @@ export default function CollectionPage() {
                         <Grid item key={result.firebaseID}>
                             <ImgMediaCard
                                 result={result}
-                                onDelete={() =>
-                                    removeFromCollection(result.firebaseID)
-                                }
+                                onDelete={() => remove(result.firebaseID)}
                                 page="collection-page"
                                 plants={results}
                             />
