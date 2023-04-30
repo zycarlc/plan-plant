@@ -52,7 +52,6 @@ export default function SearchBar() {
 
     return (
         <>
-            <h1>Plan Plants</h1>
             <form action="/" method="get" onSubmit={submitSearch}>
                 <TextField
                     id="standard-search"

@@ -6,33 +6,53 @@ import CardMedia from "@mui/material/CardMedia"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
 import { db } from ".."
-import { addDoc, collection, query } from "firebase/firestore"
+import { addDoc, collection } from "firebase/firestore"
 import fetchCollection from "../Models/FetchCollection"
+import removeFromCollection from "../Models/RemoveFromCollection"
 
-export default function ImgMediaCard({ result }) {
+export default function ImgMediaCard({ result, onDelete, page, plants }) {
     const plantCollectionsRef = collection(db, "plant_collection")
 
-    const [plantsCollection, setPlantsCollection] = useState([])
+    const [plantInCollection, setPlantInCollection] = useState(false)
+    const [plantsCollection, setPlantsCollection] = useState(plants)
 
     async function updateCollection() {
         const data = await fetchCollection()
-        const plantIds = data.map(plant => plant.id)
-        setPlantsCollection(plantIds)
+        let newPlantsCollection = {}
+        data.forEach(plant => {
+            newPlantsCollection = {
+                ...newPlantsCollection,
+                [plant.id]: plant.firebaseID,
+            }
+        })
+        return newPlantsCollection
     }
     async function AddToCollection(result) {
         try {
             await addDoc(plantCollectionsRef, result)
-            fetchCollection()
-                .then(data => data.map(plant => plant.id))
-                .then(res => setPlantsCollection(res))
+            let newPlantsCollection = await updateCollection()
+            let isPlantInCollection = Object.keys(newPlantsCollection).includes(
+                String(result.id)
+            )
+            setPlantInCollection(isPlantInCollection)
+            setPlantsCollection(newPlantsCollection)
         } catch (err) {
             console.log(err)
         }
     }
+    async function remove(id) {
+        console.log(plantsCollection)
+        removeFromCollection(plantsCollection[String(id)]).then(res =>
+            setPlantInCollection(false)
+        )
+    }
     useEffect(() => {
-        updateCollection()
+        let isPlantInCollection = Object.keys(plantsCollection).includes(
+            String(result.id)
+        )
+        // console.log(isPlantInCollection)
+        setPlantInCollection(isPlantInCollection)
     }, [])
-
     return (
         <Card sx={{ maxWidth: 345 }}>
             <CardMedia
@@ -50,10 +70,19 @@ export default function ImgMediaCard({ result }) {
                 </Typography>
             </CardContent>
             <CardActions>
-                {plantsCollection.includes(result.id) ? (
-                    <Button disabled={true} size="small">
-                        added to collection
+                {page === "collection-page" ? (
+                    <Button onClick={onDelete} size="small">
+                        remove
                     </Button>
+                ) : page === "search-result-page" && plantInCollection ? (
+                    <>
+                        <Button disabled={true} size="small" onClick={onDelete}>
+                            added to collection
+                        </Button>
+                        <Button onClick={() => remove(result.id)} size="small">
+                            remove
+                        </Button>
+                    </>
                 ) : (
                     <Button
                         onClick={() => AddToCollection(result)}
