@@ -2,7 +2,10 @@ import { Box, Button, Modal, Card, CardMedia } from "@mui/material"
 
 import Typography from "@mui/material/Typography"
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import result from "./Demo"
+import ImgMediaCard from "./ImgMediaCard"
+import fetchCollection from "../Models/FetchCollection"
 
 const style = {
     position: "absolute",
@@ -18,37 +21,84 @@ const style = {
 
 export default function SearchByImagePopUp({ open, setOpen }) {
     const [image, setImage] = useState(null)
+    const [isSearchFinished, setIsSearchFinished] = useState(true)
+    const [imageSearchResult, setImageSearchResult] = useState(null)
+    const [plantsCollection, setPlantsCollection] = useState({})
+    const [possibility, setPossibility] = useState(0)
+
     const handleClose = () => {
         setOpen(false)
     }
     const handleSubmit = async e => {
         e.preventDefault()
-        setOpen(false)
-        const base64file = [image.imageURI]
-        const data = {
-            api_key: process.env.REACT_APP_FIREBASE_PLANT_ID_API,
-            images: base64file,
-            // modifiers docs: https://github.com/flowerchecker/Plant-id-API/wiki/Modifiers
-            modifiers: ["crops_fast", "similar_images"],
-            plant_language: "en",
-            // plant details docs: https://github.com/flowerchecker/Plant-id-API/wiki/Plant-details
-            plant_details: [
-                "common_names",
-                "url",
-                "name_authority",
-                "wiki_description",
-                "taxonomy",
-                "synonyms",
-            ],
+        setIsSearchFinished(false)
+        // production phase
+        // const base64file = [image.imageURI]
+        // const data = {
+        //     api_key: process.env.REACT_APP_FIREBASE_PLANT_ID_API,
+        //     images: base64file,
+        //     // modifiers docs: https://github.com/flowerchecker/Plant-id-API/wiki/Modifiers
+        //     modifiers: ["crops_fast", "similar_images"],
+        //     plant_language: "en",
+        //     // plant details docs: https://github.com/flowerchecker/Plant-id-API/wiki/Plant-details
+        //     plant_details: [
+        //         "common_names",
+        //         "url",
+        //         "name_authority",
+        //         "wiki_description",
+        //         "taxonomy",
+        //         "synonyms",
+        //     ],
+        // }
+        // axios
+        //     .post("https://api.plant.id/v2/identify", data)
+        //     .then(res => {
+        //         const searchResult = res.data.suggestions[0]
+        //         const newImageSearchResult = {
+        //             id: searchResult.id,
+        //             default_image: {
+        //                 regular_url: searchResult.similar_images[0].url,
+        //             },
+        //             common_name: searchResult.plant_details.common_names[0],
+        //             scientific_name: searchResult.plant_details.scientific_name,
+        //         }
+        //         // console.log(Number(result.plant_details.probability))
+        //         setPossibility(Number(result.plant_details.probability))
+        //         setImageSearchResult(newImageSearchResult)
+        //         setIsSearchFinished(true)
+        //     })
+        //     .catch(err => {
+        //         console.error("Error", err)
+        //     })
+        // dev phase
+        const newImageSearchResult = {
+            id: result.id,
+            default_image: {
+                regular_url: result.plant_details.similar_images[0].url,
+            },
+            common_name: result.plant_details.common_names[0],
+            scientific_name: result.plant_details.scientific_name,
         }
-        axios
-            .post("https://api.plant.id/v2/identify", data)
-            .then(res => console.log(res))
-            .catch(err => {
-                console.error("Error", err)
-            })
+        console.log(Number(result.plant_details.probability))
+        setPossibility(Number(result.plant_details.probability))
+        setImageSearchResult(newImageSearchResult)
+        setIsSearchFinished(true)
     }
-
+    useEffect(() => {
+        updateCollection()
+    }, [])
+    async function updateCollection() {
+        const data = await fetchCollection()
+        let newPlantsCollection = {}
+        data.forEach(plant => {
+            newPlantsCollection = {
+                ...newPlantsCollection,
+                [plant.id]: plant.firebaseID,
+            }
+        })
+        // console.log(Object.keys(newPlantsCollection))
+        setPlantsCollection(newPlantsCollection)
+    }
     function handleImage(event) {
         readURI(event)
     }
@@ -89,9 +139,21 @@ export default function SearchByImagePopUp({ open, setOpen }) {
                         </Card>
                     )}
                     <button onClick={handleSubmit} type="button">
-                        OK
+                        Search
                     </button>
                 </form>
+                {isSearchFinished && possibility !== 0 && (
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        {`Accuracy ${(possibility * 100).toFixed(1)} %`}
+                    </Typography>
+                )}
+                {isSearchFinished && imageSearchResult && (
+                    <ImgMediaCard
+                        result={imageSearchResult}
+                        page={"search-by-image-popup"}
+                        plants={plantsCollection}
+                    />
+                )}
             </Box>
         </Modal>
     )
