@@ -74,7 +74,7 @@ export default function ImgMediaCard({ result, onDelete, page, plants }) {
                     <Button onClick={onDelete} size="small">
                         remove
                     </Button>
-                ) : page === "search-result-page" && plantInCollection ? (
+                ) : plantInCollection ? (
                     <>
                         <Button disabled={true} size="small" onClick={onDelete}>
                             added to collection
