@@ -18,6 +18,7 @@ import {
     PhotoCameraBack as PhotoCameraBackIcon,
 } from "@mui/icons-material"
 import SearchByImagePopUp from "./SearchByImagePopup"
+import Auth from "./AuthPopUp"
 
 import { useNavigate } from "react-router-dom"
 import { styled, alpha } from "@mui/material/styles"
@@ -78,11 +79,13 @@ function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null)
     const [anchorElUser, setAnchorElUser] = React.useState(null)
     const [open, setOpen] = React.useState(false)
+    const [loginPage, setLoginPage] = React.useState(false)
     const navigate = useNavigate()
     const handleOpenNavMenu = event => {
         setAnchorElNav(event.currentTarget)
     }
     const handleOpenUserMenu = event => {
+        setLoginPage(true)
         setAnchorElUser(event.currentTarget)
     }
 
@@ -267,6 +270,12 @@ function ResponsiveAppBar() {
                 open={open}
                 setOpen={() => {
                     setOpen(false)
+                }}
+            />
+            <Auth
+                open={loginPage}
+                setOpen={() => {
+                    setLoginPage(false)
                 }}
             />
         </AppBar>
