@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Card, CardMedia } from "@mui/material"
+import { Box, Modal, Card, CardMedia } from "@mui/material"
 
 import Typography from "@mui/material/Typography"
 import axios from "axios"
@@ -17,6 +17,8 @@ const style = {
     border: "2px solid #000",
     boxShadow: 24,
     p: 4,
+    maxHeight: "80vh",
+    overflow: "scroll",
 }
 
 export default function SearchByImagePopUp({ open, setOpen }) {
@@ -33,56 +35,59 @@ export default function SearchByImagePopUp({ open, setOpen }) {
         e.preventDefault()
         setIsSearchFinished(false)
         // production phase
-        // const base64file = [image.imageURI]
-        // const data = {
-        //     api_key: process.env.REACT_APP_FIREBASE_PLANT_ID_API,
-        //     images: base64file,
-        //     // modifiers docs: https://github.com/flowerchecker/Plant-id-API/wiki/Modifiers
-        //     modifiers: ["crops_fast", "similar_images"],
-        //     plant_language: "en",
-        //     // plant details docs: https://github.com/flowerchecker/Plant-id-API/wiki/Plant-details
-        //     plant_details: [
-        //         "common_names",
-        //         "url",
-        //         "name_authority",
-        //         "wiki_description",
-        //         "taxonomy",
-        //         "synonyms",
-        //     ],
-        // }
-        // axios
-        //     .post("https://api.plant.id/v2/identify", data)
-        //     .then(res => {
-        //         const searchResult = res.data.suggestions[0]
-        //         const newImageSearchResult = {
-        //             id: searchResult.id,
-        //             default_image: {
-        //                 regular_url: searchResult.similar_images[0].url,
-        //             },
-        //             common_name: searchResult.plant_details.common_names[0],
-        //             scientific_name: searchResult.plant_details.scientific_name,
-        //         }
-        //         // console.log(Number(result.plant_details.probability))
-        //         setPossibility(Number(result.plant_details.probability))
-        //         setImageSearchResult(newImageSearchResult)
-        //         setIsSearchFinished(true)
-        //     })
-        //     .catch(err => {
-        //         console.error("Error", err)
-        //     })
-        // dev phase
-        const newImageSearchResult = {
-            id: result.id,
-            default_image: {
-                regular_url: result.plant_details.similar_images[0].url,
-            },
-            common_name: result.plant_details.common_names[0],
-            scientific_name: result.plant_details.scientific_name,
+        const base64file = [image.imageURI]
+        const data = {
+            api_key: process.env.REACT_APP_FIREBASE_PLANT_ID_API,
+            images: base64file,
+            // modifiers docs: https://github.com/flowerchecker/Plant-id-API/wiki/Modifiers
+            modifiers: ["crops_fast", "similar_images"],
+            plant_language: "en",
+            // plant details docs: https://github.com/flowerchecker/Plant-id-API/wiki/Plant-details
+            plant_details: [
+                "common_names",
+                "url",
+                "name_authority",
+                "wiki_description",
+                "taxonomy",
+                "synonyms",
+            ],
         }
-        console.log(Number(result.plant_details.probability))
-        setPossibility(Number(result.plant_details.probability))
-        setImageSearchResult(newImageSearchResult)
-        setIsSearchFinished(true)
+        axios
+            .post("https://api.plant.id/v2/identify", data)
+            .then(res => {
+                const searchResult = res.data.suggestions[0]
+                console.log(searchResult)
+                const newImageSearchResult = {
+                    id: searchResult.id,
+                    default_image: {
+                        regular_url: searchResult.similar_images[0].url,
+                    },
+                    common_name: searchResult.plant_details.common_names
+                        ? searchResult.plant_details.common_names[0]
+                        : searchResult.plant_details.plant_name,
+                    scientific_name: searchResult.plant_details.scientific_name,
+                }
+                // console.log(Number(result.plant_details.probability))
+                setPossibility(Number(result.plant_details.probability))
+                setImageSearchResult(newImageSearchResult)
+                setIsSearchFinished(true)
+            })
+            .catch(err => {
+                console.error("Error", err)
+            })
+        // dev phase
+        // const newImageSearchResult = {
+        //     id: result.id,
+        //     default_image: {
+        //         regular_url: result.plant_details.similar_images[0].url,
+        //     },
+        //     common_name: result.plant_details.common_names[0],
+        //     scientific_name: result.plant_details.scientific_name,
+        // }
+        // console.log(Number(result.plant_details.probability))
+        // setPossibility(Number(result.plant_details.probability))
+        // setImageSearchResult(newImageSearchResult)
+        // setIsSearchFinished(true)
     }
     useEffect(() => {
         updateCollection()

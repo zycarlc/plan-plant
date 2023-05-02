@@ -9,12 +9,11 @@ import {
     FormControl,
 } from "@mui/material"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
-export default function SearchBar() {
+export default function SearchBar({ q }) {
     const navigate = useNavigate()
-
-    const [searchInput, setSearchInput] = useState({})
+    const [searchInput, setSearchInput] = useState({ q: q })
     const [filters, setFilters] = useState([])
 
     const handleFilter = (event, newFormats) => {
@@ -60,10 +59,13 @@ export default function SearchBar() {
                     variant="standard"
                     onChange={handleKeyword}
                     name="q"
+                    defaultValue={q}
                 >
-                    {searchInput?.q}
+                    {searchInput.q}
                 </TextField>
-                <Button onClick={submitSearch}>Search</Button>
+                <Button type="submit" onClick={submitSearch}>
+                    Search
+                </Button>
                 <ToggleButtonGroup
                     value={filters}
                     onChange={handleFilter}
