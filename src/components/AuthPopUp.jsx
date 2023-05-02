@@ -7,6 +7,7 @@ import {
     ToggleButton,
     Alert,
 } from "@mui/material"
+import LoadingButton from "@mui/lab/LoadingButton"
 import { useState } from "react"
 import {
     createUserWithEmailAndPassword,
@@ -35,6 +36,7 @@ export default function Auth({ open, setOpen }) {
     const [loginInfo, setLoginInfo] = useState({})
     const [alignment, setAlignment] = useState("log in")
     const [error, setError] = useState("")
+    const [isLoading, setIsLoading] = useState(false)
 
     function updateLoginInfo(e) {
         setError("")
@@ -47,6 +49,7 @@ export default function Auth({ open, setOpen }) {
 
     async function signUp(e) {
         e.preventDefault()
+        setIsLoading(true)
         if (loginInfo.password !== loginInfo.confirmedPassword) {
             setError("check your password")
             return
@@ -56,7 +59,11 @@ export default function Auth({ open, setOpen }) {
             loginInfo.email,
             loginInfo.password
         )
-            .then(userCredential => console.log(userCredential))
+            .then(userCredential => {
+                setOpen()
+                console.log(userCredential)
+                setIsLoading(false)
+            })
             .catch(err => {
                 setError(err.message)
                 console.log(err)
@@ -64,8 +71,13 @@ export default function Auth({ open, setOpen }) {
     }
     async function login(e) {
         e.preventDefault()
+        setIsLoading(true)
         signInWithEmailAndPassword(auth, loginInfo.email, loginInfo.password)
-            .then(userCredential => console.log(userCredential))
+            .then(userCredential => {
+                setOpen()
+                console.log(userCredential)
+                setIsLoading(false)
+            })
             .catch(err => {
                 setError(err.message)
                 console.log(err)
@@ -105,18 +117,20 @@ export default function Auth({ open, setOpen }) {
                         <TextField
                             id="confirm-password"
                             label="Confirm Password"
-                            type="confirm password"
+                            type="password"
                             name="confirmedPassword"
                             sx={inputStyle}
                             required
                         />
                         {error && <Alert severity="error">{error}</Alert>}
-                        <Button
+                        <LoadingButton
+                            loading={isLoading}
+                            variant="outlined"
                             disabled={!loginInfo.email || !loginInfo.password}
                             type="submit"
                         >
-                            Sign Up
-                        </Button>
+                            <span>Sign Up</span>
+                        </LoadingButton>
                     </form>
                 )}
                 {alignment === "log in" && (
@@ -137,12 +151,14 @@ export default function Auth({ open, setOpen }) {
                             required
                         />
                         {error && <Alert severity="error">{error}</Alert>}
-                        <Button
+                        <LoadingButton
+                            loading={isLoading}
+                            variant="outlined"
                             disabled={!loginInfo.email || !loginInfo.password}
                             type="submit"
                         >
-                            Log in
-                        </Button>
+                            <span>Log in</span>
+                        </LoadingButton>
                     </form>
                 )}
             </Box>
