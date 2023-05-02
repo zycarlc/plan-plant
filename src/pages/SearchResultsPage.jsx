@@ -2,9 +2,10 @@ import { useSearchParams } from "react-router-dom"
 import axios from "axios"
 import { useEffect, useState } from "react"
 import ImgMediaCard from "../components/ImgMediaCard"
-import { Box, Stack, Paper } from "@mui/material"
+import { Box, Stack, Paper, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import fetchCollection from "../Models/FetchCollection"
+import SearchBar from "../components/SearchBar"
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -19,6 +20,13 @@ export default function SearchResults() {
     const [loading, setLoading] = useState(false)
     const [plantsCollection, setPlantsCollection] = useState({})
     const [params] = useSearchParams()
+    const q = [...params].reduce((query, [key, value]) => {
+        if (key === "q") {
+            return query + value
+        } else {
+            return query
+        }
+    }, "")
     async function updateCollection() {
         const data = await fetchCollection()
         let newPlantsCollection = {}
@@ -49,26 +57,34 @@ export default function SearchResults() {
     }, [params])
 
     return (
-        <Box sx={{ width: "100%" }}>
-            <Stack>
-                {loading ? (
-                    <Item>Loading</Item>
-                ) : results.length === 0 ? (
-                    <Item>No Result</Item>
-                ) : (
-                    results.map(result => {
-                        return (
-                            <Item key={result.id}>
-                                <ImgMediaCard
-                                    result={result}
-                                    page={"search-result-page"}
-                                    plants={plantsCollection}
-                                />
-                            </Item>
-                        )
-                    })
-                )}
-            </Stack>
-        </Box>
+        <>
+            <SearchBar q={q} />
+            <Box sx={{ width: "100%" }}>
+                <Grid
+                    container
+                    spacing={{ xs: 2, md: 3 }}
+                    columns={{ xs: 4, sm: 8, md: 12 }}
+                    padding="20px"
+                >
+                    {loading ? (
+                        <Item>Loading</Item>
+                    ) : results.length === 0 ? (
+                        <Item>No Result</Item>
+                    ) : (
+                        results.map(result => {
+                            return (
+                                <Grid item xs={2} key={result.id}>
+                                    <ImgMediaCard
+                                        result={result}
+                                        page={"search-result-page"}
+                                        plants={plantsCollection}
+                                    />
+                                </Grid>
+                            )
+                        })
+                    )}
+                </Grid>
+            </Box>
+        </>
     )
 }

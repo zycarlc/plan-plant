@@ -8,6 +8,7 @@ import CollectionPage from "./pages/CollectionPage"
 import NavBar from "./components/NavBar"
 import MyGarden from "./pages/MyGarden"
 import { useState } from "react"
+import Homepage from "./pages/HomePage"
 
 function App() {
     const location = useLocation()
@@ -20,6 +21,7 @@ function App() {
             )}
             {/* <SearchBar /> */}
             <Routes>
+                <Route path="/" element={<Homepage />} />
                 <Route path="/search" element={<SearchResults />} />
                 <Route path="/my-collection" element={<CollectionPage />} />
                 <Route path="/my-garden" element={<MyGarden />} />

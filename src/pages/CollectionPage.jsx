@@ -29,16 +29,20 @@ export default function CollectionPage() {
             sx={{
                 p: 2,
                 margin: "auto",
-                maxWidth: 900,
                 flexGrow: 1,
                 backgroundColor: theme =>
                     theme.palette.mode === "dark" ? "#1A2027" : "#fff",
             }}
         >
-            <Grid container spacing={2}>
+            <Grid
+                container
+                spacing={{ xs: 2, md: 3 }}
+                columns={{ xs: 4, sm: 8, md: 12 }}
+                padding="20px"
+            >
                 {results?.map(result => {
                     return (
-                        <Grid item key={result.firebaseID}>
+                        <Grid item xs={2} key={result.firebaseID}>
                             <ImgMediaCard
                                 result={result}
                                 onDelete={() => remove(result.firebaseID)}

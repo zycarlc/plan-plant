@@ -17,6 +17,7 @@ import {
     Search as SearchIcon,
     PhotoCameraBack as PhotoCameraBackIcon,
 } from "@mui/icons-material"
+import CameraAltIcon from "@mui/icons-material/CameraAlt"
 import SearchByImagePopUp from "./SearchByImagePopup"
 import Auth from "./AuthPopUp"
 import { auth } from ".."
@@ -69,9 +70,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         transition: theme.transitions.create("width"),
         width: "100%",
         [theme.breakpoints.up("sm")]: {
-            width: "12ch",
+            width: "21ch",
             "&:focus": {
-                width: "20ch",
+                width: "24ch",
             },
         },
     },
@@ -103,9 +104,15 @@ function ResponsiveAppBar({ user, loading }) {
         signOut(auth).catch(error => console.log(error))
     }
 
+    function submitSearch(e) {
+        e.preventDefault()
+        let query = e.target.keyword.value
+        const queryString = "/search?q=" + query
+        navigate(queryString)
+    }
     return (
-        <AppBar position="static">
-            <Container maxWidth="xl">
+        <AppBar position="static" style={{ backgroundColor: "#226009" }}>
+            <Container maxWidth="xl" style={{ color: "#f0eed1" }}>
                 <Toolbar disableGutters>
                     <GrassIcon
                         sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
@@ -209,25 +216,51 @@ function ResponsiveAppBar({ user, loading }) {
                                     handleCloseNavMenu()
                                     navigate(pagesData[page])
                                 }}
-                                sx={{ my: 2, color: "white", display: "block" }}
+                                sx={{
+                                    my: 2,
+                                    color: "inherit",
+                                    display: "block",
+                                }}
                             >
                                 {page}
                             </Button>
                         ))}
                     </Box>
                     <Box sx={{ flexGrow: 0, marginRight: "20px" }}>
-                        <Search>
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                                <PhotoCameraBackIcon
-                                    sx={{ cursor: "pointer" }}
+                        <div
+                            style={{
+                                display: "inline",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <Tooltip
+                                title="Search By Image"
+                                sx={{
+                                    lineHeight: "normal",
+                                    display: "inline-block",
+                                    verticalAlign: "middle",
+                                    marginTop: "2px",
+                                }}
+                            >
+                                <CameraAltIcon
+                                    sx={{
+                                        cursor: "pointer",
+                                    }}
                                     onClick={() => setOpen(true)}
                                 />
+                            </Tooltip>
+                        </div>
+                        <Search sx={{ display: "inline-block" }}>
+                            <SearchIconWrapper>
+                                <SearchIcon />
                             </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="Search…"
-                                inputProps={{ "aria-label": "search" }}
-                            />
+                            <form action="" onSubmit={submitSearch}>
+                                <StyledInputBase
+                                    placeholder="Don't know what to plant?"
+                                    inputProps={{ "aria-label": "search" }}
+                                    name="keyword"
+                                />
+                            </form>
                         </Search>
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>
