@@ -1,4 +1,6 @@
 import { Routes, Route, useLocation } from "react-router-dom"
+import { auth } from "."
+import { useAuthState } from "react-firebase-hooks/auth"
 import "./App.css"
 import SearchBar from "./components/SearchBar"
 import SearchResults from "./pages/SearchResultsPage"
@@ -9,10 +11,13 @@ import { useState } from "react"
 
 function App() {
     const location = useLocation()
+    const [user, loading, error] = useAuthState(auth)
 
     return (
         <div className="App">
-            {location.pathname !== "/" && <NavBar />}
+            {location.pathname !== "/" && (
+                <NavBar user={user} loading={loading} />
+            )}
             {/* <SearchBar /> */}
             <Routes>
                 <Route path="/search" element={<SearchResults />} />
