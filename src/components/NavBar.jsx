@@ -12,11 +12,7 @@ import Button from "@mui/material/Button"
 import Tooltip from "@mui/material/Tooltip"
 import MenuItem from "@mui/material/MenuItem"
 import InputBase from "@mui/material/InputBase"
-import {
-    Grass as GrassIcon,
-    Search as SearchIcon,
-    PhotoCameraBack as PhotoCameraBackIcon,
-} from "@mui/icons-material"
+import { Grass as GrassIcon, Search as SearchIcon } from "@mui/icons-material"
 import CameraAltIcon from "@mui/icons-material/CameraAlt"
 import SearchByImagePopUp from "./SearchByImagePopup"
 import Auth from "./AuthPopUp"

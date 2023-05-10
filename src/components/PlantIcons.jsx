@@ -97,25 +97,5 @@ const plantIcons = {
     grass9: "https://images.edrawsoft.com/articles/garden-symbols/grass9.png",
     grass10: "https://images.edrawsoft.com/articles/garden-symbols/grass10.png",
 }
-function generateIcons() {
-    let urls = {}
-    for (let i = 1; i <= 10; i++) {
-        urls[
-            `grass${i}`
-        ] = `https://images.edrawsoft.com/articles/garden-symbols/grass${i}.png`
-    }
-    console.log(urls)
-}
 
-const plantIconsArr = Object.values(plantIcons)
-
-function IconsBanner() {
-    return (
-        <div>
-            {plantIconsArr.map((url, i) => (
-                <img key={i} src={url} alt="" />
-            ))}
-        </div>
-    )
-}
 export default plantIcons

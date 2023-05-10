@@ -52,7 +52,7 @@ export default function ImgMediaCard({ result, onDelete, page, plants }) {
         )
         // console.log(isPlantInCollection)
         setPlantInCollection(isPlantInCollection)
-    }, [])
+    }, [plantsCollection, result.id])
     return (
         <Card sx={{ maxWidth: 345 }}>
             <CardMedia

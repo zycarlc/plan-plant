@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { styled } from "@mui/material/styles"
+// import { styled } from "@mui/material/styles"
 import Grid from "@mui/material/Grid"
 import Paper from "@mui/material/Paper"
 import fetchCollection from "../Models/FetchCollection"
@@ -7,12 +7,12 @@ import fetchCollection from "../Models/FetchCollection"
 import ImgMediaCard from "../components/ImgMediaCard"
 import removeFromCollection from "../Models/RemoveFromCollection"
 
-const Img = styled("img")({
-    margin: "auto",
-    display: "block",
-    maxWidth: "100%",
-    maxHeight: "100%",
-})
+// const Img = styled("img")({
+//     margin: "auto",
+//     display: "block",
+//     maxWidth: "100%",
+//     maxHeight: "100%",
+// })
 
 export default function CollectionPage() {
     const [results, setResults] = useState([])

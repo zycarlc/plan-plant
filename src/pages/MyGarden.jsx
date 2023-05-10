@@ -1,12 +1,10 @@
 import React, { useEffect } from "react"
-import Konva from "konva"
 import { Stage, Layer, Image } from "react-konva"
 import plantIcons from "../components/PlantIcons"
 import useImage from "use-image"
 import { v4 as uuid } from "uuid"
 import { db } from ".."
 import { doc, collection, updateDoc, query, getDocs } from "firebase/firestore"
-import { Button, Card } from "@mui/material"
 
 async function generateItems() {
     const myGardenRef = collection(db, "my_garden")
@@ -46,7 +44,6 @@ export default function MyGarden() {
     const dragUrl = React.useRef()
     const stageRef = React.useRef()
     const [images, setImages] = React.useState([])
-    const [show, setShow] = React.useState(false)
 
     function handleDragStart(e) {
         const id = e.target.name()
@@ -136,8 +133,6 @@ export default function MyGarden() {
                         {images.map(image => (
                             <URLImage
                                 key={image.id}
-                                onMouseOver={() => setShow(true)}
-                                onMouseOut={() => setShow(false)}
                                 image={image}
                                 onDragStart={handleDragStart}
                                 onDragEnd={handleDragEnd}
