@@ -24,6 +24,7 @@ export default function Homepage() {
                 position: "relative",
                 height: "100vh",
                 margin: 0,
+                boxSizing: "border-box",
             }}
             onSubmit={submitSearch}
         >
