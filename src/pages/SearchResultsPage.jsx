@@ -28,16 +28,20 @@ export default function SearchResults() {
         }
     }, "")
     async function updateCollection() {
-        const data = await fetchCollection()
-        let newPlantsCollection = {}
-        data.forEach(plant => {
-            newPlantsCollection = {
-                ...newPlantsCollection,
-                [plant.id]: plant.firebaseID,
-            }
-        })
-        // console.log(Object.keys(newPlantsCollection))
-        setPlantsCollection(newPlantsCollection)
+        try {
+            const data = await fetchCollection()
+            let newPlantsCollection = {}
+            data.forEach(plant => {
+                newPlantsCollection = {
+                    ...newPlantsCollection,
+                    [plant.id]: plant.firebaseID,
+                }
+            })
+            // console.log(Object.keys(newPlantsCollection))
+            setPlantsCollection(newPlantsCollection)
+        } catch (err) {
+            console.log(err)
+        }
     }
     useEffect(() => {
         setLoading(true)
@@ -51,8 +55,12 @@ export default function SearchResults() {
             )
             .then(res => res.data.data)
             .then(results => {
-                setLoading(false)
+                console.log(results)
                 setResults(results)
+                setLoading(false)
+            })
+            .catch(err => {
+                console.log(err)
             })
     }, [params])
 

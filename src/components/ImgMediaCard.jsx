@@ -57,9 +57,9 @@ export default function ImgMediaCard({ result, onDelete, page, plants }) {
         <Card sx={{ maxWidth: 345 }}>
             <CardMedia
                 component="img"
-                alt="green iguana"
+                alt={result.common_name}
                 height="140"
-                image={result.default_image.regular_url}
+                image={result.default_image?.regular_url}
             />
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
