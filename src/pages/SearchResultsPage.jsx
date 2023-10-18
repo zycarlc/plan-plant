@@ -55,7 +55,6 @@ export default function SearchResults() {
             )
             .then(res => res.data.data)
             .then(results => {
-                console.log(results)
                 setResults(results)
                 setLoading(false)
             })
