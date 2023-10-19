@@ -1,16 +1,24 @@
-import React, { useEffect } from "react"
+import { setDoc } from "firebase/firestore"
+import { useEffect, useRef, useState } from "react"
 import { Stage, Layer, Image } from "react-konva"
 import plantIcons from "../components/PlantIcons"
 import useImage from "use-image"
 import { v4 as uuid } from "uuid"
-import { db } from ".."
-import { doc, collection, updateDoc, query, getDocs } from "firebase/firestore"
+import { auth, db } from ".."
+import { doc, getDoc } from "firebase/firestore"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { Alert } from "@mui/material"
 
-async function generateItems() {
-    const myGardenRef = collection(db, "my_garden")
-    const q = query(myGardenRef)
-    const data = await getDocs(q)
-    return data.docs[0].data().data
+async function generateItems(userid) {
+    const myGardenRef = doc(db, "my_garden", userid)
+    const data = await getDoc(myGardenRef)
+    return data.data().data
+}
+
+async function updateItems(items, userid) {
+    setDoc(doc(db, "my_garden", userid), {
+        data: items,
+    })
 }
 
 const URLImage = ({ image, onDragStart, onDragEnd }) => {
@@ -41,9 +49,11 @@ const URLImage = ({ image, onDragStart, onDragEnd }) => {
 const plantIconsArr = Object.values(plantIcons)
 
 export default function MyGarden() {
-    const dragUrl = React.useRef()
-    const stageRef = React.useRef()
-    const [images, setImages] = React.useState([])
+    const dragUrl = useRef()
+    const stageRef = useRef()
+    const [images, setImages] = useState([])
+    const [user] = useAuthState(auth)
+    const [loginAlert, setLoginAlert] = useState(false)
 
     function handleDragStart(e) {
         const id = e.target.name()
@@ -57,7 +67,6 @@ export default function MyGarden() {
         setImages(items)
     }
     async function handleDragEnd(e) {
-        var myGardenRef = doc(db, "my_garden", "iAyFU44jMPbCoPS7r0EV")
         const id = e.target.name()
         const items = [...images]
         const item = items.find(i => i.id === id)
@@ -70,11 +79,15 @@ export default function MyGarden() {
             isDragging: false,
         }
         setImages(items)
-        await updateDoc(myGardenRef, { data: items })
+        updateItems(items, user.uid)
     }
     async function handleOnDrop(e) {
         e.preventDefault()
-        var myGardenRef = doc(db, "my_garden", "iAyFU44jMPbCoPS7r0EV")
+        if (!user) {
+            setLoginAlert(true)
+            setTimeout(() => setLoginAlert(false), 3000)
+            return
+        }
         // register event position
         stageRef.current.setPointersPositions(e)
         // add image
@@ -88,12 +101,13 @@ export default function MyGarden() {
             },
         ]
         setImages(newImages)
-        await updateDoc(myGardenRef, { data: newImages })
+        updateItems(newImages, user.uid)
     }
 
     useEffect(() => {
-        generateItems().then(res => setImages(res))
-    }, [])
+        if (!user) return
+        generateItems(user.uid).then(res => setImages(res))
+    }, [user])
 
     return (
         <>
@@ -123,6 +137,11 @@ export default function MyGarden() {
                 })}
             </div>
             <div onDrop={handleOnDrop} onDragOver={e => e.preventDefault()}>
+                {loginAlert && (
+                    <Alert severity="error">
+                        Please login to use this feature
+                    </Alert>
+                )}
                 <Stage
                     width={window.innerWidth}
                     height={window.innerHeight}

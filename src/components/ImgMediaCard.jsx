@@ -1,58 +1,61 @@
 import { useEffect, useState } from "react"
-import Card from "@mui/material/Card"
-import CardActions from "@mui/material/CardActions"
-import CardContent from "@mui/material/CardContent"
-import CardMedia from "@mui/material/CardMedia"
-import Button from "@mui/material/Button"
-import Typography from "@mui/material/Typography"
-import { db } from ".."
-import { addDoc, collection } from "firebase/firestore"
-import fetchCollection from "../Models/FetchCollection"
-import removeFromCollection from "../Models/RemoveFromCollection"
+import {
+    Card,
+    CardActions,
+    CardContent,
+    CardMedia,
+    Button,
+    Typography,
+    Alert,
+} from "@mui/material"
 
-export default function ImgMediaCard({ result, onDelete, page, plants }) {
+import { auth, db } from ".."
+import { addDoc, collection } from "firebase/firestore"
+import removeFromCollection from "../Models/RemoveFromCollection"
+import { useAuthState } from "react-firebase-hooks/auth"
+
+export default function ImgMediaCard({
+    result,
+    onDelete,
+    page,
+    plants,
+    updateCollection,
+}) {
     const plantCollectionsRef = collection(db, "plant_collection")
 
     const [plantInCollection, setPlantInCollection] = useState(false)
-    const [plantsCollection, setPlantsCollection] = useState(plants)
 
-    async function updateCollection() {
-        const data = await fetchCollection()
-        let newPlantsCollection = {}
-        data.forEach(plant => {
-            newPlantsCollection = {
-                ...newPlantsCollection,
-                [plant.id]: plant.firebaseID,
-            }
-        })
-        return newPlantsCollection
-    }
+    const [openSigninError, setOpenSigninError] = useState(false)
+
+    //fetch user id
+    const [user, loading, error] = useAuthState(auth)
+
     async function AddToCollection(result) {
+        if (!user) {
+            setOpenSigninError(true)
+            setTimeout(() => setOpenSigninError(false), 3000)
+            return
+        }
         try {
+            result.userid = user.uid
             await addDoc(plantCollectionsRef, result)
-            let newPlantsCollection = await updateCollection()
-            let isPlantInCollection = Object.keys(newPlantsCollection).includes(
-                String(result.id)
-            )
-            setPlantInCollection(isPlantInCollection)
-            setPlantsCollection(newPlantsCollection)
+            await updateCollection()
+            setOpenSigninError(false)
         } catch (err) {
             console.log(err)
         }
     }
     async function remove(id) {
-        console.log(plantsCollection)
-        removeFromCollection(plantsCollection[String(id)]).then(res =>
+        removeFromCollection(plants[String(id)]).then(res =>
             setPlantInCollection(false)
         )
     }
     useEffect(() => {
-        let isPlantInCollection = Object.keys(plantsCollection).includes(
+        let isPlantInCollection = Object.keys(plants).includes(
             String(result.id)
         )
-        // console.log(isPlantInCollection)
         setPlantInCollection(isPlantInCollection)
-    }, [plantsCollection, result.id])
+    }, [plants, result.id])
     return (
         <Card sx={{ maxWidth: 345 }}>
             <CardMedia
@@ -92,6 +95,9 @@ export default function ImgMediaCard({ result, onDelete, page, plants }) {
                     </Button>
                 )}
             </CardActions>
+            {openSigninError && (
+                <Alert severity="error">Please Log in first</Alert>
+            )}
         </Card>
     )
 }

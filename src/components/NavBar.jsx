@@ -1,17 +1,21 @@
 import * as React from "react"
-import AppBar from "@mui/material/AppBar"
-import Box from "@mui/material/Box"
-import Toolbar from "@mui/material/Toolbar"
-import IconButton from "@mui/material/IconButton"
-import Typography from "@mui/material/Typography"
-import Menu from "@mui/material/Menu"
+import {
+    AppBar,
+    Box,
+    Toolbar,
+    IconButton,
+    Typography,
+    Menu,
+    Container,
+    Avatar,
+    Button,
+    Tooltip,
+    MenuItem,
+    InputBase,
+} from "@mui/material"
+
 import MenuIcon from "@mui/icons-material/Menu"
-import Container from "@mui/material/Container"
-import Avatar from "@mui/material/Avatar"
-import Button from "@mui/material/Button"
-import Tooltip from "@mui/material/Tooltip"
-import MenuItem from "@mui/material/MenuItem"
-import InputBase from "@mui/material/InputBase"
+
 import { Grass as GrassIcon, Search as SearchIcon } from "@mui/icons-material"
 import CameraAltIcon from "@mui/icons-material/CameraAlt"
 import SearchByImagePopUp from "./SearchByImagePopup"
@@ -25,11 +29,10 @@ import { styled, alpha } from "@mui/material/styles"
 const pagesData = {
     "My Collection": "my-collection",
     "My Garden": "my-garden",
-    About: "about",
 }
 const pages = Object.keys(pagesData)
 
-const settings = ["Profile", "Account", "Dashboard", "Logout"]
+const settings = ["Logout"]
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",

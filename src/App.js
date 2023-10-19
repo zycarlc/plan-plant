@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom"
+import { Routes, Route } from "react-router-dom"
 import { auth } from "."
 import { useAuthState } from "react-firebase-hooks/auth"
 import "./App.css"
@@ -9,14 +9,12 @@ import MyGarden from "./pages/MyGarden"
 import Homepage from "./pages/HomePage"
 
 function App() {
-    const location = useLocation()
     const [user, loading] = useAuthState(auth)
 
     return (
         <div className="App">
-            {location.pathname !== "/" && (
-                <NavBar user={user} loading={loading} />
-            )}
+            <NavBar user={user} loading={loading} />
+
             {/* <SearchBar /> */}
             <Routes>
                 <Route path="/" element={<Homepage />} />

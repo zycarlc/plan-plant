@@ -6,6 +6,8 @@ import { Box, Paper, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import fetchCollection from "../Models/FetchCollection"
 import SearchBar from "../components/SearchBar"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { auth } from ".."
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -20,6 +22,8 @@ export default function SearchResults() {
     const [loading, setLoading] = useState(false)
     const [plantsCollection, setPlantsCollection] = useState({})
     const [params] = useSearchParams()
+    const [user, authLoading, error] = useAuthState(auth)
+
     const q = [...params].reduce((query, [key, value]) => {
         if (key === "q") {
             return query + value
@@ -28,8 +32,12 @@ export default function SearchResults() {
         }
     }, "")
     async function updateCollection() {
+        if (!user) {
+            setPlantsCollection({})
+            return
+        }
         try {
-            const data = await fetchCollection()
+            const data = await fetchCollection(user.uid)
             let newPlantsCollection = {}
             data.forEach(plant => {
                 newPlantsCollection = {
@@ -37,7 +45,6 @@ export default function SearchResults() {
                     [plant.id]: plant.firebaseID,
                 }
             })
-            // console.log(Object.keys(newPlantsCollection))
             setPlantsCollection(newPlantsCollection)
         } catch (err) {
             console.log(err)
@@ -61,7 +68,7 @@ export default function SearchResults() {
             .catch(err => {
                 console.log(err)
             })
-    }, [params])
+    }, [params, user])
 
     return (
         <>
@@ -85,6 +92,7 @@ export default function SearchResults() {
                                         result={result}
                                         page={"search-result-page"}
                                         plants={plantsCollection}
+                                        updateCollection={updateCollection}
                                     />
                                 </Grid>
                             )

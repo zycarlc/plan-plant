@@ -66,6 +66,7 @@ export default function Auth({ open, setOpen }) {
             .catch(err => {
                 setError(err.message)
                 console.log(err)
+                setIsLoading(false)
             })
     }
     async function login(e) {
@@ -74,12 +75,12 @@ export default function Auth({ open, setOpen }) {
         signInWithEmailAndPassword(auth, loginInfo.email, loginInfo.password)
             .then(userCredential => {
                 setOpen()
-                console.log(userCredential)
                 setIsLoading(false)
             })
             .catch(err => {
                 setError(err.message)
                 console.log(err)
+                setIsLoading(false)
             })
     }
 

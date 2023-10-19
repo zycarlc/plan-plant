@@ -6,6 +6,8 @@ import { useEffect, useState } from "react"
 import result from "./Demo"
 import ImgMediaCard from "./ImgMediaCard"
 import fetchCollection from "../Models/FetchCollection"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { auth } from ".."
 
 const style = {
     position: "absolute",
@@ -27,6 +29,7 @@ export default function SearchByImagePopUp({ open, setOpen }) {
     const [imageSearchResult, setImageSearchResult] = useState(null)
     const [plantsCollection, setPlantsCollection] = useState({})
     const [possibility, setPossibility] = useState(0)
+    const [user, loading, error] = useAuthState(auth)
 
     const handleClose = () => {
         setOpen(false)
@@ -34,6 +37,7 @@ export default function SearchByImagePopUp({ open, setOpen }) {
     const handleSubmit = async e => {
         e.preventDefault()
         setIsSearchFinished(false)
+        updateCollection()
         // production phase
         const base64file = [image.imageURI]
         const data = {
@@ -75,25 +79,9 @@ export default function SearchByImagePopUp({ open, setOpen }) {
             .catch(err => {
                 console.error("Error", err)
             })
-        // dev phase
-        // const newImageSearchResult = {
-        //     id: result.id,
-        //     default_image: {
-        //         regular_url: result.plant_details.similar_images[0].url,
-        //     },
-        //     common_name: result.plant_details.common_names[0],
-        //     scientific_name: result.plant_details.scientific_name,
-        // }
-        // console.log(Number(result.plant_details.probability))
-        // setPossibility(Number(result.plant_details.probability))
-        // setImageSearchResult(newImageSearchResult)
-        // setIsSearchFinished(true)
     }
-    useEffect(() => {
-        updateCollection()
-    }, [])
     async function updateCollection() {
-        const data = await fetchCollection()
+        const data = await fetchCollection(user.uid)
         let newPlantsCollection = {}
         data.forEach(plant => {
             newPlantsCollection = {
