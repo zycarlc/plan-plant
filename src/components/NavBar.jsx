@@ -77,6 +77,57 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }))
 
+const SearchBox = ({ setOpen, handleCloseNavMenu }) => {
+    const navigate = useNavigate()
+    function submitSearch(e) {
+        e.preventDefault()
+        let query = e.target.keyword.value
+        const queryString = "/search?q=" + query
+        navigate(queryString)
+        handleCloseNavMenu()
+    }
+    return (
+        <Box
+            sx={{
+                flexGrow: 0,
+                marginRight: "20px",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+            }}
+        >
+            <Tooltip
+                title="Search By Image"
+                sx={{
+                    lineHeight: "normal",
+                    display: "inline-block",
+                    verticalAlign: "middle",
+                    marginTop: "2px",
+                }}
+            >
+                <CameraAltIcon
+                    sx={{
+                        cursor: "pointer",
+                    }}
+                    onClick={() => setOpen(true)}
+                />
+            </Tooltip>
+            <Search sx={{ display: "inline-block" }}>
+                <SearchIconWrapper>
+                    <SearchIcon />
+                </SearchIconWrapper>
+                <form action="" onSubmit={submitSearch}>
+                    <StyledInputBase
+                        placeholder="Don't know what to plant?"
+                        inputProps={{ "aria-label": "search" }}
+                        name="keyword"
+                    />
+                </form>
+            </Search>
+        </Box>
+    )
+}
+
 function ResponsiveAppBar({ user, loading }) {
     const [anchorElNav, setAnchorElNav] = React.useState(null)
     const [anchorElUser, setAnchorElUser] = React.useState(null)
@@ -103,12 +154,6 @@ function ResponsiveAppBar({ user, loading }) {
         signOut(auth).catch(error => console.log(error))
     }
 
-    function submitSearch(e) {
-        e.preventDefault()
-        let query = e.target.keyword.value
-        const queryString = "/search?q=" + query
-        navigate(queryString)
-    }
     return (
         <AppBar position="static" style={{ backgroundColor: "#226009" }}>
             <Container maxWidth="xl" style={{ color: "#f0eed1" }}>
@@ -180,6 +225,12 @@ function ResponsiveAppBar({ user, loading }) {
                                     </Typography>
                                 </MenuItem>
                             ))}
+                            <MenuItem>
+                                <SearchBox
+                                    setOpen={setOpen}
+                                    handleCloseNavMenu={handleCloseNavMenu}
+                                />
+                            </MenuItem>
                         </Menu>
                     </Box>
                     <GrassIcon
@@ -225,42 +276,15 @@ function ResponsiveAppBar({ user, loading }) {
                             </Button>
                         ))}
                     </Box>
-                    <Box sx={{ flexGrow: 0, marginRight: "20px" }}>
-                        <div
-                            style={{
-                                display: "inline",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <Tooltip
-                                title="Search By Image"
-                                sx={{
-                                    lineHeight: "normal",
-                                    display: "inline-block",
-                                    verticalAlign: "middle",
-                                    marginTop: "2px",
-                                }}
-                            >
-                                <CameraAltIcon
-                                    sx={{
-                                        cursor: "pointer",
-                                    }}
-                                    onClick={() => setOpen(true)}
-                                />
-                            </Tooltip>
-                        </div>
-                        <Search sx={{ display: "inline-block" }}>
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <form action="" onSubmit={submitSearch}>
-                                <StyledInputBase
-                                    placeholder="Don't know what to plant?"
-                                    inputProps={{ "aria-label": "search" }}
-                                    name="keyword"
-                                />
-                            </form>
-                        </Search>
+                    <Box
+                        sx={{
+                            display: { xs: "none", md: "flex" },
+                        }}
+                    >
+                        <SearchBox
+                            setOpen={setOpen}
+                            handleCloseNavMenu={handleCloseNavMenu}
+                        />
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>
                         {loading ? (

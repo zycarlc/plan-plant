@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box"
-import * as React from "react"
+import { useRef, useState, useEffect } from "react"
 import Paper from "@mui/material/Paper"
 import InputBase from "@mui/material/InputBase"
 import IconButton from "@mui/material/IconButton"
@@ -9,6 +9,9 @@ import { Typography } from "@mui/material"
 
 export default function Homepage() {
     const navigate = useNavigate()
+    const [height, setHeight] = useState(window.innerHeight)
+    const [offSetTop, setOffSetTop] = useState(0)
+    const homeRef = useRef()
 
     function submitSearch(e) {
         e.preventDefault()
@@ -16,17 +19,39 @@ export default function Homepage() {
         const queryString = "/search?q=" + query
         navigate(queryString)
     }
+
+    function handleWindowSizeChange() {
+        setHeight(window.innerHeight)
+        setOffSetTop(getOffSet())
+    }
+
+    function getOffSet() {
+        return homeRef.current.getBoundingClientRect().top
+    }
+
+    useEffect(() => {
+        window.addEventListener("resize", handleWindowSizeChange)
+        return () => {
+            window.removeEventListener("resize", handleWindowSizeChange)
+        }
+    })
+
+    useEffect(() => {
+        setOffSetTop(getOffSet())
+    }, [])
+
     return (
         <Paper
             component="form"
             sx={{
                 p: "2px 4px",
                 position: "relative",
-                height: "100vh",
+                height: `${height - offSetTop}px`,
                 margin: 0,
                 boxSizing: "border-box",
             }}
             onSubmit={submitSearch}
+            ref={homeRef}
         >
             <Box
                 sx={{
@@ -42,12 +67,13 @@ export default function Homepage() {
                 }}
             >
                 <Typography
-                    variant="h2"
+                    variant="p"
                     noWrap
                     component="a"
                     href="/"
                     sx={{
                         mr: 2,
+                        fontSize: { xs: "36px", md: "56px" },
                         display: "flex",
                         fontFamily: "monospace",
                         fontWeight: 700,
